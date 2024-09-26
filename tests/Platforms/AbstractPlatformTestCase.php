@@ -290,10 +290,17 @@ abstract class AbstractPlatformTestCase extends TestCase
         // timestamps on datetime types should not be quoted
         foreach ($types as $type) {
             self::assertSame(
-                ' DEFAULT ' . $this->platform->getCurrentTimestampSQL(),
+                ' DEFAULT (' . $this->platform->getCurrentTimestampSQL(). ')',
                 $this->platform->getDefaultValueDeclarationSQL([
                     'type'    => Type::getType($type),
                     'default' => $this->platform->getCurrentTimestampSQL(),
+                ]),
+            );
+            self::assertSame(
+                " DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')",
+                $this->platform->getDefaultValueDeclarationSQL([
+                    'type'    => Type::getType($type),
+                    'default' => "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'",
                 ]),
             );
         }
